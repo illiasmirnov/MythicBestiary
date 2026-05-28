@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Mythic Bestiary</title>
+
+    <meta name="description"
+          content="Mythic Bestiary — інтерактивний бестіарій міфічних істот, драконів, духів та легендарних рас.">
+
+    <meta name="theme-color"
+          content="#10141f">
+
+    <!-- CSS -->
+    <link rel="stylesheet"
+          href="./css/site.css">
+
+    <!-- Favicon -->
+    <link rel="icon"
+          type="image/png"
+          href="./images/ui/favicon.png">
+
+</head>
+
+<body>
+
+    <!-- ======================================================
+         HEADER
+    ======================================================= -->
+
+    <header class="header"
+            id="home">
+
+        <div class="container">
+
+            <div class="header__top">
+
+                <!-- LOGO -->
+
+                <div class="logo-wrapper">
+
+                    <img class="logo-image"
+                         src="./images/ui/logo.png"
+                         alt="Mythic Bestiary Logo">
+
+                    <div>
+
+                        <h1 class="logo">
+                            Mythic Bestiary
+                        </h1>
+
+                        <p class="logo-subtitle">
+                            Архів міфічних створінь та древніх рас
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- NAVIGATION -->
+
+                <nav class="navigation">
+
+                    <ul class="navigation__list">
+
+                        <li>
+                            <a href="#home">
+                                Головна
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#creatures">
+                                Істоти
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#mythologies">
+                                Міфології
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#races">
+                                Раси
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </nav>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- ======================================================
+         HERO SECTION
+    ======================================================= -->
+
+    <section class="hero-section">
+
+        <div class="container">
+
+            <div class="hero-section__content">
+
+                <!-- TEXT -->
+
+                <div class="hero-section__text">
+
+                    <span class="hero-section__badge">
+                        Mythic Database
+                    </span>
+
+                    <h2 class="hero-section__title">
+                        Досліджуйте легендарних істот світу Mythic Bestiary
+                    </h2>
+
+                    <p class="hero-section__description">
+                        Інтерактивний бестіарій міфічних істот,
+                        драконів, духів та древніх рас.
+                    </p>
+
+                    <div class="hero-section__actions">
+
+                        <a href="#creatures"
+                           class="btn btn-primary">
+
+                            Відкрити бестіарій
+
+                        </a>
+
+                        <a href="#races"
+                           class="btn btn-secondary">
+
+                            Переглянути раси
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <!-- IMAGE -->
+
+                <div class="hero-section__image">
+
+                    <img src="./images/backgrounds/mythic-world.jpg"
+                         alt="Mythic World">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ======================================================
+         PROJECT INFO
+    ======================================================= -->
+
+    <section class="project-section">
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span class="section-heading__subtitle">
+                    Project Architecture
+                </span>
+
+                <h2 class="section-heading__title">
+                    Інтеграція архітектури проєкту
+                </h2>
+
+            </div>
+
+            <div class="project-grid">
+
+                <div class="project-card">
+
+                    <h3>
+                        MongoDB Atlas
+                    </h3>
+
+                    <p>
+                        Використовується MongoDB Atlas
+                        через MongoDbContext та колекцію Creatures.
+                    </p>
+
+                </div>
+
+                <div class="project-card">
+
+                    <h3>
+                        DTO Layer
+                    </h3>
+
+                    <p>
+                        CreatureCreateDto, CreatureUpdateDto,
+                        CreatureResponseDto та CreatureListDto.
+                    </p>
+
+                </div>
+
+                <div class="project-card">
+
+                    <h3>
+                        Razor Pages
+                    </h3>
+
+                    <p>
+                        Pages/Creatures використовується
+                        для CRUD-операцій.
+                    </p>
+
+                </div>
+
+                <div class="project-card">
+
+                    <h3>
+                        Validation
+                    </h3>
+
+                    <p>
+                        CreatureValidator забезпечує
+                        перевірку даних істот.
+                    </p>
+
+                </div>
+
+                <div class="project-card">
+
+                    <h3>
+                        Repository Pattern
+                    </h3>
+
+                    <p>
+                        ICreatureRepository та CreatureRepository.
+                    </p>
+
+                </div>
+
+                <div class="project-card">
+
+                    <h3>
+                        Middleware
+                    </h3>
+
+                    <p>
+                        ErrorHandlingMiddleware та RequestLoggingMiddleware.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ======================================================
+         SEARCH SECTION
+    ======================================================= -->
+
+    <section class="search-section">
+
+        <div class="container">
+
+            <div class="search-panel">
+
+                <!-- SEARCH -->
+
+                <div class="search-panel__group">
+
+                    <label for="creatureSearch">
+                        Пошук істоти
+                    </label>
+
+                    <input type="text"
+                           id="creatureSearch"
+                           placeholder="Введіть назву істоти...">
+
+                </div>
+
+                <!-- CATEGORY -->
+
+                <div class="search-panel__group">
+
+                    <label for="mythologyFilter">
+                        Тип істоти
+                    </label>
+
+                    <select id="mythologyFilter">
+
+                        <option value="all">
+                            Усі
+                        </option>
+
+                        <option value="dragon">
+                            Дракони
+                        </option>
+
+                        <option value="humanoid">
+                            Людиноподібні
+                        </option>
+
+                        <option value="elemental">
+                            Стихійні
+                        </option>
+
+                        <option value="spirit">
+                            Духи
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- SORT -->
+
+                <div class="search-panel__group">
+
+                    <label for="dangerSort">
+                        Рівень небезпеки
+                    </label>
+
+                    <select id="dangerSort">
+
+                        <option value="default">
+                            За замовчуванням
+                        </option>
+
+                        <option value="high">
+                            Найнебезпечніші
+                        </option>
+
+                        <option value="low">
+                            Найменш небезпечні
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- BUTTON -->
+
+                <div class="search-panel__actions">
+
+                    <button class="btn btn-primary"
+                            id="searchButton"
+                            type="button">
+
+                        Пошук
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ======================================================
+         CREATURES
+    ======================================================= -->
+
+    <main class="main-content"
+          id="creatures">
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span class="section-heading__subtitle">
+                    Creatures Collection
+                </span>
+
+                <h2 class="section-heading__title">
+                    Каталог міфічних істот
+                </h2>
+
+            </div>
+
+            <!-- GRID -->
+
+            <div class="creatures-grid"
+                 id="creaturesGrid">
+
+                <!-- CARD -->
+
+                <article class="creature-card"
+                         data-category="dragon"
+                         data-danger="5"
+                         data-name="Горинич">
+
+                    <div class="creature-card__image">
+
+                        <img src="./images/creatures/gorynich.jpg"
+                             alt="Горинич">
+
+                    </div>
+
+                    <div class="creature-card__content">
+
+                        <div class="creature-card__meta">
+
+                            <span class="creature-card__type">
+                                Дракон
+                            </span>
+
+                            <span class="creature-card__danger">
+                                Небезпека: 5.0
+                            </span>
+
+                        </div>
+
+                        <h3 class="creature-card__title">
+                            Горинич
+                        </h3>
+
+                        <p class="creature-card__description">
+                            П’ятиголовий дракон зі стихійним диханням
+                            та божественною регенерацією.
+                        </p>
+
+                        <ul class="creature-card__abilities">
+
+                            <li>Стихійне дихання</li>
+                            <li>Контроль температури</li>
+                            <li>Божественна регенерація</li>
+
+                        </ul>
+
+                        <div class="creature-card__footer">
+
+                            <span class="creature-card__location">
+                                Межа божественного світу
+                            </span>
+
+                            <button class="btn btn-primary"
+                                    type="button">
+
+                                Деталі
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ======================================================
+         FOOTER
+    ======================================================= -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="footer__content">
+
+                <div>
+
+                    <h3 class="footer__title">
+                        Mythic Bestiary
+                    </h3>
+
+                    <p class="footer__text">
+                        Інтерактивний HTML-інтерфейс
+                        для Mythic Bestiary.
+                    </p>
+
+                </div>
+
+                <div class="footer__links">
+
+                    <a href="#home">
+                        Головна
+                    </a>
+
+                    <a href="#creatures">
+                        Бестіарій
+                    </a>
+
+                    <a href="#mythologies">
+                        Міфології
+                    </a>
+
+                    <a href="#races">
+                        Раси
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="footer__bottom">
+
+                <p>
+                    MythicBestiary © 2026
+                </p>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+    <!-- ======================================================
+         JAVASCRIPT
+    ======================================================= -->
+
+    <script src="./js/site.js"></script>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const searchInput =
+                document.getElementById("creatureSearch");
+
+            const categoryFilter =
+                document.getElementById("mythologyFilter");
+
+            const dangerSort =
+                document.getElementById("dangerSort");
+
+            const searchButton =
+                document.getElementById("searchButton");
+
+            const creaturesGrid =
+                document.getElementById("creaturesGrid");
+
+            const creatureCards =
+                Array.from(
+                    document.querySelectorAll(".creature-card")
+                );
+
+            // ==========================================
+            // FILTER
+            // ==========================================
+
+            function filterCreatures() {
+
+                const searchValue =
+                    searchInput.value
+                        .toLowerCase()
+                        .trim();
+
+                const selectedCategory =
+                    categoryFilter.value;
+
+                creatureCards.forEach((card) => {
+
+                    const creatureName =
+                        card.dataset.name.toLowerCase();
+
+                    const creatureCategory =
+                        card.dataset.category;
+
+                    const matchesSearch =
+                        creatureName.includes(searchValue);
+
+                    const matchesCategory =
+                        selectedCategory === "all" ||
+                        creatureCategory === selectedCategory;
+
+                    if (matchesSearch && matchesCategory) {
+
+                        card.style.display = "flex";
+
+                    } else {
+
+                        card.style.display = "none";
+
+                    }
+
+                });
+
+                sortCreatures();
+
+            }
+
+            // ==========================================
+            // SORT
+            // ==========================================
+
+            function sortCreatures() {
+
+                const sortedCards =
+                    [...creatureCards];
+
+                sortedCards.sort((a, b) => {
+
+                    const dangerA =
+                        parseFloat(a.dataset.danger);
+
+                    const dangerB =
+                        parseFloat(b.dataset.danger);
+
+                    if (dangerSort.value === "high") {
+
+                        return dangerB - dangerA;
+
+                    }
+
+                    if (dangerSort.value === "low") {
+
+                        return dangerA - dangerB;
+
+                    }
+
+                    return 0;
+
+                });
+
+                sortedCards.forEach((card) => {
+
+                    creaturesGrid.appendChild(card);
+
+                });
+
+            }
+
+            // ==========================================
+            // EVENTS
+            // ==========================================
+
+            searchButton.addEventListener(
+                "click",
+                filterCreatures
+            );
+
+            searchInput.addEventListener(
+                "keyup",
+                filterCreatures
+            );
+
+            categoryFilter.addEventListener(
+                "change",
+                filterCreatures
+            );
+
+            dangerSort.addEventListener(
+                "change",
+                filterCreatures
+            );
+
+        });
+
+    </script>
+
+</body>
+
+</html>

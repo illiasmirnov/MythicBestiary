@@ -1,0 +1,34 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+
+# Visual Studio Version 17
+
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MythicBestiary.Web", "src\MythicBestiary.Web\MythicBestiary.Web.csproj", "{A13B7F91-4D18-4B8C-91C7-3E1DAD94F321}"
+EndProject
+
+Global
+
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A13B7F91-4D18-4B8C-91C7-3E1DAD94F321}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A13B7F91-4D18-4B8C-91C7-3E1DAD94F321}.Debug|Any CPU.Build.0 = Debug|Any CPU
+
+		{A13B7F91-4D18-4B8C-91C7-3E1DAD94F321}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A13B7F91-4D18-4B8C-91C7-3E1DAD94F321}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8F58A8B0-10AE-42E7-89E9-9CB0FA8B4A56}
+	EndGlobalSection
+
+EndGlobal
