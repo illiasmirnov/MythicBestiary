@@ -1,52 +1,49 @@
-using MongoDB.Bson.Serialization.Attributes;
 
-namespace MythicBestiary.Web.Models
+namespace MythicBestiary.Web.Models;
+
+public sealed class HistoricalNote
 {
-    public class HistoricalNote
-    {
-        [BsonElement("title")]
-        public string Title { get; set; } = string.Empty;
+    [BsonElement("Title")]
+    public string Title { get; set; } = string.Empty;
 
-        [BsonElement("content")]
-        public string Content { get; set; } = string.Empty;
+    [BsonElement("Text")]
+    public string Text { get; set; } = string.Empty;
 
-        [BsonElement("source")]
-        public string Source { get; set; } = string.Empty;
+    [BsonElement("Source")]
+    [BsonIgnoreIfNull]
+    public string? Source { get; set; }
 
-        [BsonElement("author")]
-        public string Author { get; set; } = string.Empty;
+    [BsonElement("Author")]
+    [BsonIgnoreIfNull]
+    public string? Author { get; set; }
 
-        [BsonElement("eventDate")]
-        public DateTime? EventDate { get; set; }
+    [BsonElement("EventDate")]
+    [BsonIgnoreIfNull]
+    public DateTime? EventDate { get; set; }
 
-        [BsonElement("noteType")]
-        public string NoteType { get; set; } = string.Empty;
+    [BsonElement("NoteType")]
+    [BsonIgnoreIfNull]
+    public string? NoteType { get; set; }
 
-        [BsonIgnoreIfNull]
-        [BsonElement("culture")]
-        public string? Culture { get; set; }
+    [BsonElement("Culture")]
+    [BsonIgnoreIfNull]
+    public string? Culture { get; set; }
 
-        [BsonIgnoreIfNull]
-        [BsonElement("civilization")]
-        public string? Civilization { get; set; }
+    [BsonElement("Civilization")]
+    [BsonIgnoreIfNull]
+    public string? Civilization { get; set; }
 
-        [BsonIgnoreIfNull]
-        [BsonElement("historicalPeriod")]
-        public string? HistoricalPeriod { get; set; }
+    [BsonElement("HistoricalPeriod")]
+    [BsonIgnoreIfNull]
+    public string? HistoricalPeriod { get; set; }
 
-        [BsonIgnoreIfNull]
-        [BsonElement("referenceUrl")]
-        public string? ReferenceUrl { get; set; }
+    [BsonElement("AdditionalNotes")]
+    [BsonIgnoreIfNull]
+    public string? AdditionalNotes { get; set; }
 
-        [BsonIgnoreIfNull]
-        [BsonElement("additionalNotes")]
-        public string? AdditionalNotes { get; set; }
+    [BsonElement("Tags")]
+    public List<string> Tags { get; set; } = [];
 
-        [BsonIgnoreIfNull]
-        [BsonElement("tags")]
-        public List<string>? Tags { get; set; }
-
-        [BsonElement("createdAt")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    }
+    [BsonElement("CreatedAt")]
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -1,95 +1,77 @@
-using AutoMapper;
-using MythicBestiary.DTOs;
-using MythicBestiary.Models;
+using MythicBestiary.Web.DTOs;
+using MythicBestiary.Web.Models;
 
-namespace MythicBestiary.Mapping;
+namespace MythicBestiary.Web.Mapping;
 
 public class CreatureMappingProfile : Profile
 {
+    private const int ShortDescriptionLength = 180;
+
     public CreatureMappingProfile()
     {
-        // DTO -> Model
+        // Перетворення DTO на модель.
 
         CreateMap<CreatureCreateDto, Creature>()
-            .ForMember(
-                destination => destination.Id,
-                options => options.Ignore())
-            .ForMember(
-                destination => destination.CreatedAt,
-                options => options.MapFrom(_ => DateTime.UtcNow))
-            .ForMember(
-                destination => destination.UpdatedAt,
-                options => options.MapFrom(_ => DateTime.UtcNow))
-            .ForMember(
-                destination => destination.RelatedCreatures,
-                options => options.NullSubstitute(new List<RelatedCreature>()))
-            .ForMember(
-                destination => destination.HistoricalNotes,
-                options => options.NullSubstitute(new List<HistoricalNote>()))
-            .ForMember(
-                destination => destination.Images,
-                options => options.NullSubstitute(new List<ImageResource>()))
-            .ForMember(
-                destination => destination.Abilities,
-                options => options.NullSubstitute(new List<string>()));
+            .ForMember(destination => destination.Id, options => options.Ignore())
+            .ForMember(destination => destination.CreatedAt, options => options.MapFrom(_ => DateTime.UtcNow))
+            .ForMember(destination => destination.UpdatedAt, options => options.MapFrom(_ => DateTime.UtcNow))
+            .ForMember(destination => destination.RelatedCreatures, options => options.NullSubstitute(new List<RelatedCreature>()))
+            .ForMember(destination => destination.HistoricalNotes, options => options.NullSubstitute(new List<HistoricalNote>()))
+            .ForMember(destination => destination.Images, options => options.NullSubstitute(new List<ImageResource>()))
+            .ForMember(destination => destination.Abilities, options => options.NullSubstitute(new List<string>()));
 
         CreateMap<CreatureUpdateDto, Creature>()
-            .ForMember(
-                destination => destination.Id,
-                options => options.Ignore())
-            .ForMember(
-                destination => destination.CreatedAt,
-                options => options.Ignore())
-            .ForMember(
-                destination => destination.UpdatedAt,
-                options => options.MapFrom(_ => DateTime.UtcNow));
+            .ForMember(destination => destination.Id, options => options.Ignore())
+            .ForMember(destination => destination.CreatedAt, options => options.Ignore())
+            .ForMember(destination => destination.UpdatedAt, options => options.MapFrom(_ => DateTime.UtcNow))
+            .ForMember(destination => destination.RelatedCreatures, options => options.NullSubstitute(new List<RelatedCreature>()))
+            .ForMember(destination => destination.HistoricalNotes, options => options.NullSubstitute(new List<HistoricalNote>()))
+            .ForMember(destination => destination.Images, options => options.NullSubstitute(new List<ImageResource>()))
+            .ForMember(destination => destination.Abilities, options => options.NullSubstitute(new List<string>()));
 
-        // Model -> DTO
+        // Перетворення моделі на DTO.
 
         CreateMap<Creature, CreatureResponseDto>()
-            .ForMember(
-                destination => destination.RelatedCreatures,
-                options => options.MapFrom(source => source.RelatedCreatures))
-            .ForMember(
-                destination => destination.HistoricalNotes,
-                options => options.MapFrom(source => source.HistoricalNotes))
-            .ForMember(
-                destination => destination.Images,
-                options => options.MapFrom(source => source.Images))
-            .ForMember(
-                destination => destination.Abilities,
-                options => options.NullSubstitute(new List<string>()));
+            .ForMember(destination => destination.Abilities, options => options.NullSubstitute(new List<string>()))
+            .ForMember(destination => destination.RelatedCreatures, options => options.NullSubstitute(new List<RelatedCreature>()))
+            .ForMember(destination => destination.HistoricalNotes, options => options.NullSubstitute(new List<HistoricalNote>()))
+            .ForMember(destination => destination.Images, options => options.NullSubstitute(new List<ImageResource>()));
 
         CreateMap<Creature, CreatureListDto>()
-            .ForMember(
-                destination => destination.ShortDescription,
-                options => options.MapFrom(source =>
-                    string.IsNullOrWhiteSpace(source.Description)
-                        ? string.Empty
-                        : source.Description.Length > 180
-                            ? source.Description.Substring(0, 180) + "..."
-                            : source.Description))
-            .ForMember(
-                destination => destination.ThumbnailUrl,
-                options => options.MapFrom(source =>
-                    source.Images != null &&
-                    source.Images.Any()
-                        ? source.Images.First().Url
-                        : string.Empty));
+            .ForMember(destination => destination.ShortDescription, options => options.MapFrom(source =>
+                BuildShortDescription(source.Description)))
+            .ForMember(destination => destination.ThumbnailUrl, options => options.MapFrom(source =>
+                source.Images != null && source.Images.Count > 0
+                    ? source.Images[0].Url
+                    : string.Empty));
 
-        // RelatedCreature mappings
+        CreateMap<RelatedCreature, RelatedCreature>();
+        CreateMap<HistoricalNote, HistoricalNote>();
+        CreateMap<ImageResource, ImageResource>();
+    }
 
-        CreateMap<RelatedCreature, RelatedCreature>()
-            .ReverseMap();
+    private static string BuildShortDescription(string? description)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            return string.Empty;
+        }
 
-        // HistoricalNote mappings
+        var normalizedDescription = description.Trim();
 
-        CreateMap<HistoricalNote, HistoricalNote>()
-            .ReverseMap();
+        if (normalizedDescription.Length <= ShortDescriptionLength)
+        {
+            return normalizedDescription;
+        }
 
-        // ImageResource mappings
+        var trimmedDescription = normalizedDescription[..ShortDescriptionLength];
+        var lastSpaceIndex = trimmedDescription.LastIndexOf(' ');
 
-        CreateMap<ImageResource, ImageResource>()
-            .ReverseMap();
+        if (lastSpaceIndex > 0)
+        {
+            trimmedDescription = trimmedDescription[..lastSpaceIndex];
+        }
+
+        return $"{trimmedDescription}…";
     }
 }

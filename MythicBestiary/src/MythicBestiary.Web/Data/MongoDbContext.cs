@@ -1,68 +1,46 @@
-using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MythicBestiary.Models;
 
 namespace MythicBestiary.Data;
 
-public class MongoDbContext
+public sealed class MongoDbContext
 {
     private readonly IMongoDatabase _database;
 
-    // Колекція міфічних істот
-    public IMongoCollection<Creature> Creatures { get; }
-
-    // MongoDB клієнт
     public MongoClient MongoClient { get; }
 
-    // Назва бази даних
     public string DatabaseName { get; }
 
-    public MongoDbContext(IOptions<MongoDbSettings> settings)
+    public IMongoCollection<Creature> Creatures { get; }
+
+    public MongoDbContext(IOptions<MongoDbSettings> options)
     {
-        ArgumentNullException.ThrowIfNull(settings);
+        ArgumentNullException.ThrowIfNull(options);
 
-        var mongoDbSettings = settings.Value;
+        MongoDbSettings settings = options.Value
+            ?? throw new InvalidOperationException("Налаштування MongoDB не задано.");
 
-        if (string.IsNullOrWhiteSpace(mongoDbSettings.ConnectionString))
-        {
-            throw new InvalidOperationException(
-                "Рядок підключення MongoDB не налаштований.");
-        }
+        ValidateSettings(settings);
 
-        if (string.IsNullOrWhiteSpace(mongoDbSettings.DatabaseName))
-        {
-            throw new InvalidOperationException(
-                "Назва бази даних MongoDB не налаштована.");
-        }
+        MongoClientSettings clientSettings =
+            MongoClientSettings.FromConnectionString(settings.ConnectionString);
 
-        if (string.IsNullOrWhiteSpace(mongoDbSettings.CreaturesCollectionName))
-        {
-            throw new InvalidOperationException(
-                "Назва колекції істот MongoDB не налаштована.");
-        }
+        TimeSpan timeout = TimeSpan.FromSeconds(settings.ConnectionTimeoutSeconds);
 
-        var mongoClientSettings = MongoClientSettings
-            .FromConnectionString(mongoDbSettings.ConnectionString);
+        clientSettings.ConnectTimeout = timeout;
+        clientSettings.ServerSelectionTimeout = timeout;
 
-        mongoClientSettings.ConnectTimeout =
-            TimeSpan.FromSeconds(mongoDbSettings.ConnectionTimeoutSeconds);
-
-        mongoClientSettings.ServerSelectionTimeout =
-            TimeSpan.FromSeconds(mongoDbSettings.ConnectionTimeoutSeconds);
-
-        MongoClient = new MongoClient(mongoClientSettings);
-
-        DatabaseName = mongoDbSettings.DatabaseName;
+        MongoClient = new MongoClient(clientSettings);
+        DatabaseName = settings.DatabaseName;
 
         _database = MongoClient.GetDatabase(DatabaseName);
 
         Creatures = _database.GetCollection<Creature>(
-            mongoDbSettings.CreaturesCollectionName);
+            settings.CreaturesCollectionName);
     }
 
-    // Отримання колекції MongoDB за назвою
-    public IMongoCollection<TDocument> GetCollection<TDocument>(
-        string collectionName)
+    public IMongoCollection<TDocument> GetCollection<TDocument>(string collectionName)
     {
         if (string.IsNullOrWhiteSpace(collectionName))
         {
@@ -74,21 +52,51 @@ public class MongoDbContext
         return _database.GetCollection<TDocument>(collectionName);
     }
 
-    // Перевірка доступності MongoDB
     public async Task<bool> CanConnectAsync(
         CancellationToken cancellationToken = default)
     {
         try
         {
-            await _database.RunCommandAsync(
-                (Command<MongoDB.Bson.BsonDocument>)"{ping:1}",
+            await _database.RunCommandAsync<BsonDocument>(
+                new BsonDocument("ping", 1),
                 cancellationToken: cancellationToken);
 
             return true;
         }
-        catch
+        catch (MongoException)
         {
             return false;
+        }
+        catch (TimeoutException)
+        {
+            return false;
+        }
+    }
+
+    private static void ValidateSettings(MongoDbSettings settings)
+    {
+        if (string.IsNullOrWhiteSpace(settings.ConnectionString))
+        {
+            throw new InvalidOperationException(
+                "Рядок підключення до MongoDB не налаштовано.");
+        }
+
+        if (string.IsNullOrWhiteSpace(settings.DatabaseName))
+        {
+            throw new InvalidOperationException(
+                "Назву бази даних MongoDB не налаштовано.");
+        }
+
+        if (string.IsNullOrWhiteSpace(settings.CreaturesCollectionName))
+        {
+            throw new InvalidOperationException(
+                "Назву колекції міфічних істот MongoDB не налаштовано.");
+        }
+
+        if (settings.ConnectionTimeoutSeconds <= 0)
+        {
+            throw new InvalidOperationException(
+                "Час очікування підключення до MongoDB має бути більшим за 0 секунд.");
         }
     }
 }

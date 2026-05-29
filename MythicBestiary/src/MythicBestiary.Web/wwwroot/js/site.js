@@ -1,29 +1,21 @@
 /* ======================================================
-   APPLICATION INITIALIZATION
+   ІНІЦІАЛІЗАЦІЯ ЗАСТОСУНКУ
 ====================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
     initializeNavigation();
-
     initializeForms();
-
     initializeCreatureGallery();
-
     initializeSearch();
-
     initializeFilters();
-
     initializeThemeSwitcher();
-
     initializeDeleteConfirmation();
-
     initializeScrollEffects();
-
     initializeLazyLoading();
 });
 
 /* ======================================================
-   NAVIGATION
+   НАВІГАЦІЯ
 ====================================================== */
 
 function initializeNavigation() {
@@ -57,15 +49,14 @@ function initializeNavigation() {
         }
 
         link.addEventListener("click", () => {
-            if (navigationMenu) {
-                navigationMenu.classList.remove("navigation--open");
-            }
+            navigationMenu?.classList.remove("navigation--open");
+            navigationToggle?.classList.remove("navigation-toggle--active");
         });
     });
 }
 
 /* ======================================================
-   FORMS
+   ФОРМИ
 ====================================================== */
 
 function initializeForms() {
@@ -76,19 +67,18 @@ function initializeForms() {
             clearValidationMessages(form);
 
             const requiredFields = form.querySelectorAll("[required]");
-
             let isValid = true;
 
             requiredFields.forEach(field => {
-                const value = field.value.trim();
+                if (!("value" in field)) {
+                    return;
+                }
+
+                const value = String(field.value).trim();
 
                 if (!value) {
                     isValid = false;
-
-                    showValidationMessage(
-                        field,
-                        "Поле є обов'язковим для заповнення."
-                    );
+                    showValidationMessage(field, "Це поле є обов’язковим.");
                 }
             });
 
@@ -97,9 +87,7 @@ function initializeForms() {
             }
         });
 
-        const controls = form.querySelectorAll(".form-control");
-
-        controls.forEach(control => {
+        form.querySelectorAll(".form-control").forEach(control => {
             control.addEventListener("input", () => {
                 removeValidationMessage(control);
             });
@@ -110,9 +98,7 @@ function initializeForms() {
 }
 
 function clearValidationMessages(form) {
-    const messages = form.querySelectorAll(".validation-message");
-
-    messages.forEach(message => {
+    form.querySelectorAll(".validation-message").forEach(message => {
         message.remove();
     });
 }
@@ -121,37 +107,30 @@ function showValidationMessage(field, message) {
     removeValidationMessage(field);
 
     const validationMessage = document.createElement("div");
-
     validationMessage.className = "validation-message";
     validationMessage.textContent = message;
 
     field.classList.add("input-validation-error");
-
-    field.parentElement.appendChild(validationMessage);
+    field.parentElement?.appendChild(validationMessage);
 }
 
 function removeValidationMessage(field) {
     field.classList.remove("input-validation-error");
 
     const validationMessage =
-        field.parentElement.querySelector(".validation-message");
+        field.parentElement?.querySelector(".validation-message");
 
-    if (validationMessage) {
-        validationMessage.remove();
-    }
+    validationMessage?.remove();
 }
 
 function initializeAutosave(form) {
     const autosaveKey = `mythic-bestiary-autosave-${window.location.pathname}`;
+    const controls = form.querySelectorAll("input, textarea, select");
 
-    const controls = form.querySelectorAll(
-        "input, textarea, select"
-    );
+    try {
+        const savedData = localStorage.getItem(autosaveKey);
 
-    const savedData = localStorage.getItem(autosaveKey);
-
-    if (savedData) {
-        try {
+        if (savedData) {
             const parsedData = JSON.parse(savedData);
 
             controls.forEach(control => {
@@ -163,9 +142,9 @@ function initializeAutosave(form) {
                     control.value = parsedData[control.name];
                 }
             });
-        } catch (error) {
-            console.error("Autosave restore error:", error);
         }
+    } catch (error) {
+        console.warn("Не вдалося відновити автозбережені дані форми.", error);
     }
 
     controls.forEach(control => {
@@ -178,10 +157,11 @@ function initializeAutosave(form) {
                 }
             });
 
-            localStorage.setItem(
-                autosaveKey,
-                JSON.stringify(formData)
-            );
+            try {
+                localStorage.setItem(autosaveKey, JSON.stringify(formData));
+            } catch (error) {
+                console.warn("Не вдалося зберегти дані форми.", error);
+            }
         });
     });
 
@@ -191,48 +171,43 @@ function initializeAutosave(form) {
 }
 
 /* ======================================================
-   CREATURE GALLERY
+   ГАЛЕРЕЯ ІСТОТ
 ====================================================== */
 
 function initializeCreatureGallery() {
-    const galleryImages = document.querySelectorAll(
-        ".creature-gallery img"
-    );
-
-    const previewImage = document.querySelector(
-        "[data-gallery-preview]"
-    );
+    const galleryImages = document.querySelectorAll(".creature-gallery img");
+    const previewImage = document.querySelector("[data-gallery-preview]");
 
     galleryImages.forEach(image => {
         image.addEventListener("click", () => {
             if (previewImage) {
                 previewImage.src = image.src;
-                previewImage.alt = image.alt;
+                previewImage.alt = image.alt || "Зображення істоти";
             }
 
-            galleryImages.forEach(item => {
-                item.classList.remove("active");
-            });
-
+            galleryImages.forEach(item => item.classList.remove("active"));
             image.classList.add("active");
         });
 
         image.addEventListener("dblclick", () => {
-            openFullscreenImage(image.src, image.alt);
+            openFullscreenImage(image.src, image.alt || "Зображення істоти");
         });
     });
 }
 
 function openFullscreenImage(source, altText) {
     const overlay = document.createElement("div");
-
     overlay.className = "gallery-fullscreen";
 
-    overlay.innerHTML = `
-        <div class="gallery-fullscreen__content">
-            <img src="${source}" alt="${altText}">
-        </div>
-    `;
+    const content = document.createElement("div");
+    content.className = "gallery-fullscreen__content";
+
+    const image = document.createElement("img");
+    image.src = source;
+    image.alt = altText;
+
+    content.appendChild(image);
+    overlay.appendChild(content);
 
     overlay.addEventListener("click", () => {
         overlay.remove();
@@ -242,35 +217,23 @@ function openFullscreenImage(source, altText) {
 }
 
 /* ======================================================
-   SEARCH
+   ПОШУК
 ====================================================== */
 
 function initializeSearch() {
-    const searchInput = document.querySelector(
-        "[data-creature-search]"
-    );
-
-    const creatureCards = document.querySelectorAll(
-        ".creature-card"
-    );
+    const searchInput = document.querySelector("[data-creature-search]");
+    const creatureCards = document.querySelectorAll(".creature-card");
 
     if (!searchInput || creatureCards.length === 0) {
         return;
     }
 
     const debouncedSearch = debounce(() => {
-        const query = searchInput.value
-            .trim()
-            .toLowerCase();
+        const query = searchInput.value.trim().toLowerCase();
 
         creatureCards.forEach(card => {
-            const searchableContent =
-                card.textContent.toLowerCase();
-
-            const isVisible =
-                searchableContent.includes(query);
-
-            card.style.display = isVisible ? "" : "none";
+            const searchableContent = card.textContent.toLowerCase();
+            card.style.display = searchableContent.includes(query) ? "" : "none";
         });
     }, 250);
 
@@ -278,17 +241,12 @@ function initializeSearch() {
 }
 
 /* ======================================================
-   FILTERS
+   ФІЛЬТРИ
 ====================================================== */
 
 function initializeFilters() {
-    const filterSelects = document.querySelectorAll(
-        "[data-filter]"
-    );
-
-    const creatureCards = document.querySelectorAll(
-        ".creature-card"
-    );
+    const filterSelects = document.querySelectorAll("[data-filter]");
+    const creatureCards = document.querySelectorAll(".creature-card");
 
     if (filterSelects.length === 0 || creatureCards.length === 0) {
         return;
@@ -307,21 +265,15 @@ function applyFilters(cards, filters) {
 
         filters.forEach(filter => {
             const filterKey = filter.dataset.filter;
-            const filterValue = filter.value
-                .trim()
-                .toLowerCase();
+            const filterValue = filter.value.trim().toLowerCase();
 
             if (!filterValue) {
                 return;
             }
 
-            const cardValue =
-                card.dataset[filterKey];
+            const cardValue = card.dataset[filterKey];
 
-            if (
-                !cardValue ||
-                !cardValue.toLowerCase().includes(filterValue)
-            ) {
+            if (!cardValue || !cardValue.toLowerCase().includes(filterValue)) {
                 isVisible = false;
             }
         });
@@ -331,18 +283,14 @@ function applyFilters(cards, filters) {
 }
 
 /* ======================================================
-   THEME SWITCHER
+   ПЕРЕМИКАЧ ТЕМИ
 ====================================================== */
 
 function initializeThemeSwitcher() {
-    const themeToggle = document.querySelector(
-        "[data-theme-toggle]"
-    );
-
+    const themeToggle = document.querySelector("[data-theme-toggle]");
     const root = document.documentElement;
 
-    const savedTheme =
-        localStorage.getItem("mythic-bestiary-theme");
+    const savedTheme = localStorage.getItem("mythic-bestiary-theme");
 
     if (savedTheme) {
         root.setAttribute("data-theme", savedTheme);
@@ -353,36 +301,25 @@ function initializeThemeSwitcher() {
     }
 
     themeToggle.addEventListener("click", () => {
-        const currentTheme =
-            root.getAttribute("data-theme");
-
-        const nextTheme =
-            currentTheme === "dark"
-                ? "light"
-                : "dark";
+        const currentTheme = root.getAttribute("data-theme");
+        const nextTheme = currentTheme === "dark" ? "light" : "dark";
 
         root.setAttribute("data-theme", nextTheme);
-
-        localStorage.setItem(
-            "mythic-bestiary-theme",
-            nextTheme
-        );
+        localStorage.setItem("mythic-bestiary-theme", nextTheme);
     });
 }
 
 /* ======================================================
-   DELETE CONFIRMATION
+   ПІДТВЕРДЖЕННЯ ВИДАЛЕННЯ
 ====================================================== */
 
 function initializeDeleteConfirmation() {
-    const deleteForms = document.querySelectorAll(
-        "[data-delete-form]"
-    );
+    const deleteForms = document.querySelectorAll("[data-delete-form]");
 
     deleteForms.forEach(form => {
         form.addEventListener("submit", event => {
             const confirmation = confirm(
-                "Ви впевнені, що бажаєте видалити цю істоту?"
+                "Ви впевнені, що хочете видалити цю істоту?"
             );
 
             if (!confirmation) {
@@ -393,7 +330,7 @@ function initializeDeleteConfirmation() {
 }
 
 /* ======================================================
-   SCROLL EFFECTS
+   АНІМАЦІЇ ПІД ЧАС ПРОКРУЧУВАННЯ
 ====================================================== */
 
 function initializeScrollEffects() {
@@ -401,7 +338,8 @@ function initializeScrollEffects() {
         ".creature-card, .creature-details"
     );
 
-    if (animatedElements.length === 0) {
+    if (animatedElements.length === 0 || !("IntersectionObserver" in window)) {
+        animatedElements.forEach(element => element.classList.add("visible"));
         return;
     }
 
@@ -410,57 +348,53 @@ function initializeScrollEffects() {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add("visible");
+                    observer.unobserve(entry.target);
                 }
             });
         },
-        {
-            threshold: 0.15
-        }
+        { threshold: 0.15 }
     );
 
-    animatedElements.forEach(element => {
-        observer.observe(element);
-    });
+    animatedElements.forEach(element => observer.observe(element));
 }
 
 /* ======================================================
-   LAZY LOADING
+   ЛІНИВЕ ЗАВАНТАЖЕННЯ ЗОБРАЖЕНЬ
 ====================================================== */
 
 function initializeLazyLoading() {
-    const lazyImages = document.querySelectorAll(
-        "img[data-src]"
-    );
+    const lazyImages = document.querySelectorAll("img[data-src]");
 
     if (lazyImages.length === 0) {
         return;
     }
 
-    const imageObserver = new IntersectionObserver(
-        entries => {
-            entries.forEach(entry => {
-                if (!entry.isIntersecting) {
-                    return;
-                }
+    if (!("IntersectionObserver" in window)) {
+        lazyImages.forEach(image => loadLazyImage(image));
+        return;
+    }
 
-                const image = entry.target;
+    const imageObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) {
+                return;
+            }
 
-                image.src = image.dataset.src;
-
-                image.removeAttribute("data-src");
-
-                imageObserver.unobserve(image);
-            });
-        }
-    );
-
-    lazyImages.forEach(image => {
-        imageObserver.observe(image);
+            loadLazyImage(entry.target);
+            imageObserver.unobserve(entry.target);
+        });
     });
+
+    lazyImages.forEach(image => imageObserver.observe(image));
+}
+
+function loadLazyImage(image) {
+    image.src = image.dataset.src;
+    image.removeAttribute("data-src");
 }
 
 /* ======================================================
-   API HELPERS
+   API-ДОПОМІЖНІ ФУНКЦІЇ
 ====================================================== */
 
 async function fetchData(url) {
@@ -468,26 +402,23 @@ async function fetchData(url) {
         const response = await fetch(url, {
             method: "GET",
             headers: {
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             }
         });
 
         if (!response.ok) {
-            throw new Error(
-                `HTTP error: ${response.status}`
-            );
+            throw new Error(`Помилка HTTP: ${response.status}`);
         }
 
         return await response.json();
     } catch (error) {
-        console.error("Fetch error:", error);
-
+        console.error("Не вдалося отримати дані:", error);
         return null;
     }
 }
 
 /* ======================================================
-   UTILITIES
+   УТИЛІТИ
 ====================================================== */
 
 function debounce(callback, delay = 300) {
@@ -503,14 +434,9 @@ function debounce(callback, delay = 300) {
 }
 
 /* ======================================================
-   FUTURE FEATURES
+   ЗАПЛАНОВАНІ ПОКРАЩЕННЯ
 ====================================================== */
 
-// TODO:
-// Добавить notifications system
-
-// TODO:
-// Добавить client-side caching
-
-// TODO:
-// Добавить offline support
+// TODO: додати систему сповіщень.
+// TODO: додати клієнтське кешування.
+// TODO: додати підтримку офлайн-режиму.

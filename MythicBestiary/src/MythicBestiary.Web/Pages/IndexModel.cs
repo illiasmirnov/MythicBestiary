@@ -1,53 +1,50 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using MythicBestiary.Web.DTOs;
 using MythicBestiary.Web.Services.Interfaces;
 
-namespace MythicBestiary.Pages;
+namespace MythicBestiary.Web.Pages;
 
-public class IndexModel : PageModel
+public sealed class IndexModel : PageModel
 {
     private readonly ICreatureService _creatureService;
+    private readonly ILogger<IndexModel> _logger;
 
-    public List<object> PopularCreatures { get; set; } = new();
-
-    public int TotalCreaturesCount { get; set; }
-
-    public string? ErrorMessage { get; set; }
-
-    public IndexModel(ICreatureService creatureService)
+    public IndexModel(
+        ICreatureService creatureService,
+        ILogger<IndexModel> logger)
     {
         _creatureService = creatureService;
+        _logger = logger;
     }
 
-    public async Task OnGet()
+    public List<CreatureListDto> PopularCreatures { get; private set; } = [];
+
+    public int TotalCreaturesCount { get; private set; }
+
+    public string? ErrorMessage { get; private set; }
+
+    public async Task OnGetAsync()
     {
         try
         {
-            // Получение данных через сервисный слой
-            var creatures = await _creatureService.GetAllAsync();
+            var creatures = (await _creatureService.GetAllAsync()).ToList();
 
-            if (creatures is null)
-            {
-                PopularCreatures = new List<object>();
-                TotalCreaturesCount = 0;
+            TotalCreaturesCount = creatures.Count;
 
-                return;
-            }
-
-            // Общее количество существ
-            TotalCreaturesCount = creatures.Count();
-
-            // Подготовка популярных существ для главной страницы
+            // Для головної сторінки показуємо найбільш небезпечних істот.
             PopularCreatures = creatures
+                .OrderByDescending(creature => creature.DangerLevel)
+                .ThenBy(creature => creature.Title)
                 .Take(6)
-                .Cast<object>()
                 .ToList();
         }
-        catch
+        catch (Exception exception)
         {
-            ErrorMessage = "Виникла помилка при завантаженні даних бестіарію.";
+            _logger.LogError(
+                exception,
+                "Помилка під час завантаження даних головної сторінки бестіарію.");
 
-            PopularCreatures = new List<object>();
-
+            ErrorMessage = "Не вдалося завантажити дані бестіарію. Спробуйте ще раз.";
+            PopularCreatures = [];
             TotalCreaturesCount = 0;
         }
     }

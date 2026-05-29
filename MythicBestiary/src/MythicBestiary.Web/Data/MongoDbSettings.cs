@@ -1,38 +1,40 @@
 namespace MythicBestiary.Data;
 
 /// <summary>
-/// Конфигурационные настройки подключения к MongoDB.
-/// Используются через IOptions для централизованного управления параметрами базы данных.
+/// Налаштування підключення до MongoDB.
+/// Використовуються через IOptions для централізованого керування параметрами бази даних.
 /// </summary>
-public class MongoDbSettings
+public sealed class MongoDbSettings
 {
-    // Рядок підключення до MongoDB
-    public string ConnectionString { get; set; } = string.Empty;
-
-    // Назва бази даних
-    public string DatabaseName { get; set; } = string.Empty;
-
-    // Назва секції конфігурації
     public const string SectionName = "MongoDbSettings";
 
-    // Назва колекції міфічних істот
+    // Рядок підключення до MongoDB Atlas або локального сервера MongoDB.
+    public string ConnectionString { get; set; } = string.Empty;
+
+    // Назва бази даних MongoDB.
+    public string DatabaseName { get; set; } = "notes_db";
+
+    // Назва колекції міфічних істот.
     public string CreaturesCollectionName { get; set; } = "notes_1";
 
-    // Назва колекції рас
-    public string UsersCollectionName { get; set; } = "users_1";
+    // Назва колекції рас міфічного світу.
+    public string RacesCollectionName { get; set; } = "users_1";
 
-    // Таймаут підключення у секундах
+    // Назва колекції геоданих для демонстрації роботи з GeoJSON.
+    public string GeoLocationsCollectionName { get; set; } = "geo_locations";
+
+    // Час очікування підключення в секундах.
     public int ConnectionTimeoutSeconds { get; set; } = 30;
 
-    // Кількість повторних спроб підключення
+    // Кількість повторних спроб підключення.
     public int RetryCount { get; set; } = 3;
 
-    // Затримка між повторними спробами у мілісекундах
+    // Затримка між повторними спробами в мілісекундах.
     public int RetryDelayMilliseconds { get; set; } = 1000;
 
-    // Чи дозволене автоматичне створення індексів
+    // Дозволяє автоматичне створення індексів.
     public bool EnableAutoIndexCreation { get; set; } = true;
 
-    // Чи дозволене логування MongoDB-запитів
+    // Дозволяє логування MongoDB-запитів.
     public bool EnableMongoLogging { get; set; } = false;
 }

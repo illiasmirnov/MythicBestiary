@@ -3,20 +3,15 @@ using System.Text.Json;
 
 namespace MythicBestiary.Middleware;
 
-public class ErrorHandlingMiddleware
+public sealed class ErrorHandlingMiddleware
 {
     private readonly RequestDelegate _next;
-
     private readonly ILogger<ErrorHandlingMiddleware> _logger;
 
     public ErrorHandlingMiddleware(
         RequestDelegate next,
         ILogger<ErrorHandlingMiddleware> logger)
     {
-        // Сохранение middleware pipeline
-
-        // Сохранение logger
-
         _next = next;
         _logger = logger;
     }
@@ -25,129 +20,37 @@ public class ErrorHandlingMiddleware
     {
         try
         {
-            // Передача запроса дальше по pipeline
-
             await _next(context);
         }
         catch (Exception exception)
         {
-            // Логирование ошибки
-
             _logger.LogError(
                 exception,
-                "Unhandled exception occurred. Path: {Path}, Method: {Method}, TraceId: {TraceId}",
-                context.Request.Path,
-                context.Request.Method,
-                context.TraceIdentifier);
+                "Під час обробки HTTP-запиту сталася непередбачена помилка.");
 
-            // Обработка исключения
-
-            // Формирование error response
-
-            await HandleExceptionAsync(context, exception);
+            await HandleExceptionAsync(context);
         }
     }
 
-    private async Task HandleExceptionAsync(
-        HttpContext context,
-        Exception exception)
+    private static async Task HandleExceptionAsync(HttpContext context)
     {
-        // Установка content-type
+        if (context.Response.HasStarted)
+        {
+            return;
+        }
 
-        // Установка status code
-
-        // Формирование объекта ошибки
-
-        // Сериализация ответа
-
-        context.Response.ContentType = "application/json";
-
-        var statusCode = GetStatusCode(exception);
-
-        context.Response.StatusCode = statusCode;
+        context.Response.Clear();
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        context.Response.ContentType = "application/json; charset=utf-8";
 
         var response = new
         {
-            // TODO:
-            // Добавить error code
-
-            // TODO:
-            // Добавить trace id
-
-            StatusCode = statusCode,
-
-            TraceId = context.TraceIdentifier,
-
-            Path = context.Request.Path.Value,
-
-            Method = context.Request.Method,
-
-            Timestamp = DateTime.UtcNow,
-
-            Message = GetErrorMessage(statusCode),
-
-            Details = exception.Message
+            statusCode = context.Response.StatusCode,
+            message = "Сталася внутрішня помилка сервера. Спробуйте повторити запит пізніше."
         };
 
-        var jsonResponse = JsonSerializer.Serialize(
-            response,
-            new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = true
-            });
+        var json = JsonSerializer.Serialize(response);
 
-        await context.Response.WriteAsync(jsonResponse);
+        await context.Response.WriteAsync(json);
     }
-
-    private static int GetStatusCode(Exception exception)
-    {
-        return exception switch
-        {
-            UnauthorizedAccessException => (int)HttpStatusCode.Unauthorized,
-
-            ArgumentNullException => (int)HttpStatusCode.BadRequest,
-
-            ArgumentException => (int)HttpStatusCode.BadRequest,
-
-            InvalidOperationException => (int)HttpStatusCode.BadRequest,
-
-            KeyNotFoundException => (int)HttpStatusCode.NotFound,
-
-            _ => (int)HttpStatusCode.InternalServerError
-        };
-    }
-
-    private static string GetErrorMessage(int statusCode)
-    {
-        return statusCode switch
-        {
-            (int)HttpStatusCode.BadRequest =>
-                "Bad request",
-
-            (int)HttpStatusCode.NotFound =>
-                "Requested resource was not found",
-
-            (int)HttpStatusCode.Unauthorized =>
-                "Unauthorized access",
-
-            (int)HttpStatusCode.InternalServerError =>
-                "Internal server error",
-
-            _ =>
-                "Unexpected application error"
-        };
-    }
-
-    // TODO:
-    // Добавить environment based responses
-
-    // TODO:
-    // Добавить custom exception mapping
-
-    // TODO:
-    // Добавить validation error handling
-
-    // TODO:
-    // Добавить problem details support
 }

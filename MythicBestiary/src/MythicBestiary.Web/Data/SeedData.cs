@@ -1,5 +1,3 @@
-using MongoDB.Driver;
-using MythicBestiary.Models;
 
 namespace MythicBestiary.Data;
 
@@ -9,180 +7,133 @@ public static class SeedData
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        var existingCreaturesCount = await context.Creatures
-            .CountDocumentsAsync(_ => true);
+        long existingCreaturesCount = await context.Creatures.CountDocumentsAsync(_ => true);
 
         if (existingCreaturesCount > 0)
         {
             return;
         }
 
-        var creatures = CreateCreatures();
-
-        if (creatures.Count == 0)
-        {
-            return;
-        }
-
-        await context.Creatures.InsertManyAsync(creatures);
+        await context.Creatures.InsertManyAsync(CreateCreatures());
     }
 
     private static List<Creature> CreateCreatures()
     {
-        var createdAt = DateTime.UtcNow;
+        DateTime createdAt = DateTime.UtcNow;
 
         return new List<Creature>
         {
-            new Creature
+            new()
             {
                 Id = "creature_001",
                 Name = "Горинич",
                 Slug = "horynych",
-                Description = "П’ятиголовий дракон із різними стихіями, що атакують почергово.",
+                Description = "П’ятиголовий дракон, кожна голова якого володіє окремою стихією та атакує почергово.",
                 Category = "Дракон",
                 Mythology = "Слов’янська",
-                Origin = "Межа між божественним і людським світом",
+                Origin = "Розрив між божественним і людським світом",
                 ThreatLevel = "Катастрофічний",
-                Abilities = new List<string>
+                Abilities = new()
                 {
                     "Стихійне дихання",
                     "Контроль температури та тиску",
-                    "Комбінування стихій",
+                    "Почерговий випуск руйнівної енергії",
+                    "Комбінування сумісних стихій",
                     "Божественна регенерація"
                 },
-                Weaknesses = new List<string>
+                Weaknesses = new() { "Стародавні реліквії", "Розділення голів" },
+                Images = new()
                 {
-                    "Стародавні реліквії",
-                    "Розділення голів"
+                    new() { Url = "/images/creatures/horynych.jpg", Alt = "Горинич" }
                 },
-                Images = new List<ImageResource>
+                HistoricalNotes = new()
                 {
-                    new ImageResource
-                    {
-                        Url = "/images/creatures/horynych.jpg",
-                        Alt = "Горинич"
-                    }
-                },
-                HistoricalNotes = new List<HistoricalNote>
-                {
-                    new HistoricalNote
+                    new()
                     {
                         Title = "Перші згадки",
-                        Content = "Згадки про Горинича знайдено у стародавніх рукописах північних земель.",
+                        Content = "Істота живе за межами світу, вивченого людьми, у розриві між божественним і людським простором.",
                         CreatedAt = createdAt
                     }
                 },
-                RelatedCreatures = new List<RelatedCreature>(),
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             },
 
-            new Creature
+            new()
             {
                 Id = "creature_002",
                 Name = "Вогненний дракон",
                 Slug = "fire-dragon",
-                Description = "Дракон із темно-червоною лускою, що випромінює сильний жар.",
+                Description = "Дракон із темно-червоною лускою та плавно вигнутими рогами. Повітря навколо нього постійно розпечене.",
                 Category = "Дракон",
                 Mythology = "Пустельні легенди",
-                Origin = "Савани та пустелі",
+                Origin = "Савани, пустелі та оази",
                 ThreatLevel = "Високий",
-                Abilities = new List<string>
+                Abilities = new() { "Вогняне дихання", "Контроль полум’я", "Теплові хвилі" },
+                Weaknesses = new() { "Крижана магія", "Вода" },
+                Images = new()
                 {
-                    "Вогняне дихання",
-                    "Контроль полум’я",
-                    "Теплові хвилі"
+                    new() { Url = "/images/creatures/fire-dragon.jpg", Alt = "Вогненний дракон" }
                 },
-                Weaknesses = new List<string>
-                {
-                    "Крижана магія",
-                    "Вода"
-                },
-                Images = new List<ImageResource>
-                {
-                    new ImageResource
-                    {
-                        Url = "/images/creatures/fire-dragon.jpg",
-                        Alt = "Вогненний дракон"
-                    }
-                },
-                HistoricalNotes = new List<HistoricalNote>(),
-                RelatedCreatures = new List<RelatedCreature>(),
+                HistoricalNotes = new(),
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             },
 
-            new Creature
+            new()
             {
                 Id = "creature_003",
                 Name = "Водяний дракон",
                 Slug = "water-dragon",
-                Description = "Дракон із темно-синьою лускою, що керує водними потоками.",
+                Description = "Дракон із темно-синьою та бірюзовою лускою. Його тіло постійно вкрите вологою, а поруч відчуваються холод і перепади тиску.",
                 Category = "Дракон",
                 Mythology = "Океанічна",
-                Origin = "Глибокі моря та затоплені печери",
+                Origin = "Глибокі моря, затоплені печери та давні підводні руїни",
                 ThreatLevel = "Високий",
-                Abilities = new List<string>
+                Abilities = new()
                 {
-                    "Керування водою",
-                    "Хвилі високого тиску",
+                    "Водяне дихання",
+                    "Керування потоками води",
+                    "Створення хвиль високого тиску",
+                    "Конденсація пари",
                     "Крижане охолодження"
                 },
-                Weaknesses = new List<string>
+                Weaknesses = new() { "Вогонь", "Вулканічний жар" },
+                Images = new()
                 {
-                    "Вогонь",
-                    "Вулканічний жар"
+                    new() { Url = "/images/creatures/water-dragon.jpg", Alt = "Водяний дракон" }
                 },
-                Images = new List<ImageResource>
-                {
-                    new ImageResource
-                    {
-                        Url = "/images/creatures/water-dragon.jpg",
-                        Alt = "Водяний дракон"
-                    }
-                },
-                HistoricalNotes = new List<HistoricalNote>(),
-                RelatedCreatures = new List<RelatedCreature>(),
+                HistoricalNotes = new(),
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             },
 
-            new Creature
+            new()
             {
                 Id = "creature_004",
                 Name = "Земляний дракон",
                 Slug = "earth-dragon",
-                Description = "Кам’яний дракон із надзвичайною фізичною міцністю.",
+                Description = "Його тіло нагадує цілісний кам’яний масив. Рухи повільні, але руйнівні.",
                 Category = "Дракон",
                 Mythology = "Гірська",
-                Origin = "Підземні печери та розломи",
+                Origin = "Підземні печери та гірські розломи",
                 ThreatLevel = "Критичний",
-                Abilities = new List<string>
+                Abilities = new() { "Контроль землі", "Сейсмічні удари", "Кам’яна броня" },
+                Weaknesses = new() { "Блискавка", "Руйнування ядра" },
+                Images = new()
                 {
-                    "Контроль землі",
-                    "Сейсмічні удари",
-                    "Кам’яна броня"
+                    new() { Url = "/images/creatures/earth-dragon.jpg", Alt = "Земляний дракон" }
                 },
-                Weaknesses = new List<string>
-                {
-                    "Блискавка",
-                    "Руйнування ядра"
-                },
-                Images = new List<ImageResource>
-                {
-                    new ImageResource
-                    {
-                        Url = "/images/creatures/earth-dragon.jpg",
-                        Alt = "Земляний дракон"
-                    }
-                },
-                HistoricalNotes = new List<HistoricalNote>(),
-                RelatedCreatures = new List<RelatedCreature>(),
+                HistoricalNotes = new(),
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             },
 
-            new Creature
+            new()
             {
                 Id = "creature_005",
                 Name = "Штормовий дракон",
@@ -192,128 +143,119 @@ public static class SeedData
                 Mythology = "Небесна",
                 Origin = "Грозові фронти",
                 ThreatLevel = "Високий",
-                Abilities = new List<string>
+                Abilities = new() { "Блискавка", "Електричний імпульс", "Політ у бурі" },
+                Weaknesses = new() { "Заземлення", "Магічна тиша" },
+                Images = new()
                 {
-                    "Блискавка",
-                    "Електричні імпульси",
-                    "Політ у бурі"
+                    new() { Url = "/images/creatures/storm-dragon.jpg", Alt = "Штормовий дракон" }
                 },
-                Weaknesses = new List<string>
-                {
-                    "Заземлення",
-                    "Магічна тиша"
-                },
-                Images = new List<ImageResource>
-                {
-                    new ImageResource
-                    {
-                        Url = "/images/creatures/storm-dragon.jpg",
-                        Alt = "Штормовий дракон"
-                    }
-                },
-                HistoricalNotes = new List<HistoricalNote>(),
-                RelatedCreatures = new List<RelatedCreature>(),
+                HistoricalNotes = new(),
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             },
 
-            new Creature
+            new()
             {
                 Id = "creature_006",
                 Name = "Небесний змій",
                 Slug = "sky-serpent",
-                Description = "Міфічна істота, що мешкає у високих повітряних потоках.",
+                Description = "Міфічна істота, що мешкає у високих повітряних потоках. Існують сумніви щодо її реальності.",
                 Category = "Змій",
                 Mythology = "Небесна",
-                Origin = "Високі повітряні шари",
+                Origin = "Високі повітряні потоки",
                 ThreatLevel = "Середній",
-                Abilities = new List<string>
-                {
-                    "Польоти",
-                    "Контроль вітру"
-                },
-                Weaknesses = new List<string>(),
-                Images = new List<ImageResource>(),
-                HistoricalNotes = new List<HistoricalNote>(),
-                RelatedCreatures = new List<RelatedCreature>(),
+                Abilities = new() { "Політ", "Контроль вітру" },
+                Weaknesses = new(),
+                Images = new(),
+                HistoricalNotes = new(),
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             },
 
-            new Creature
+            new()
             {
                 Id = "creature_007",
                 Name = "Куно-теш",
                 Slug = "kuno-tesh",
-                Description = "Людиноподібна істота, пов’язана з блискавками та вітром.",
+                Description = "Людиноподібний карлик із плоским обличчям і довгими вухами. Вважає себе нащадком блискавок і дітей вітру.",
                 Category = "Гуманоїд",
                 Mythology = "Гірська",
-                Origin = "Гірські ущелини",
+                Origin = "Гірські ущелини та сухі скелі",
                 ThreatLevel = "Високий",
-                Abilities = new List<string>
+                Abilities = new()
                 {
                     "Контроль повітря",
                     "Блискавичний удар",
-                    "Атаки з тіні"
+                    "Напад із тилу",
+                    "Позначення території шипами"
                 },
-                Weaknesses = new List<string>
+                Weaknesses = new() { "Стабільні бар’єри" },
+                Images = new(),
+                HistoricalNotes = new()
                 {
-                    "Стабільні бар’єри"
+                    new()
+                    {
+                        Title = "Відомості про знахідки",
+                        Content = "Істоту описували народи гірських ущелин і мисливці сухих скель. Серед трофеїв згадуються клапоть шаманської тканини, зуб летючого щура та маска предка.",
+                        CreatedAt = createdAt
+                    }
                 },
-                Images = new List<ImageResource>(),
-                HistoricalNotes = new List<HistoricalNote>(),
-                RelatedCreatures = new List<RelatedCreature>(),
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             },
 
-            new Creature
+            new()
             {
                 Id = "creature_008",
                 Name = "Мирда-кал",
                 Slug = "mirda-kal",
-                Description = "Поклоняється силі попелу та вулканічного вогню.",
+                Description = "Карлик із попелясто-білою шкірою, що поклоняється силі попелу та вулканічного вогню.",
                 Category = "Гуманоїд",
                 Mythology = "Вулканічна",
-                Origin = "Випалені яри",
+                Origin = "Випалені яри та скелясті котловини",
                 ThreatLevel = "Високий",
-                Abilities = new List<string>
+                Abilities = new()
                 {
                     "Контроль вогню",
-                    "Виклик спалахів"
+                    "Ритуальні танці",
+                    "Виклик спалахів із тріщин"
                 },
-                Weaknesses = new List<string>(),
-                Images = new List<ImageResource>(),
-                HistoricalNotes = new List<HistoricalNote>(),
-                RelatedCreatures = new List<RelatedCreature>(),
+                Weaknesses = new(),
+                Images = new(),
+                HistoricalNotes = new(),
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             },
 
-            new Creature
+            new()
             {
                 Id = "creature_009",
                 Name = "Шіо-тан",
                 Slug = "shio-tan",
-                Description = "Шаман болотяних територій.",
+                Description = "Шаман болотяних кіл, що тлумачить знаки на поверхні води.",
                 Category = "Шаман",
                 Mythology = "Болотна",
-                Origin = "Болотисті низини",
+                Origin = "Болотисті низини та затоплені яри",
                 ThreatLevel = "Середній",
-                Abilities = new List<string>
+                Abilities = new()
                 {
-                    "Керування туманом",
-                    "Контроль водяної пари"
+                    "Керування водяною парою",
+                    "Приховування у тумані",
+                    "Шепіт перед атакою"
                 },
-                Weaknesses = new List<string>(),
-                Images = new List<ImageResource>(),
-                HistoricalNotes = new List<HistoricalNote>(),
-                RelatedCreatures = new List<RelatedCreature>(),
+                Weaknesses = new(),
+                Images = new(),
+                HistoricalNotes = new(),
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             },
 
-            new Creature
+            new()
             {
                 Id = "creature_010",
                 Name = "Друнг-мек",
@@ -323,59 +265,84 @@ public static class SeedData
                 Mythology = "Племінна",
                 Origin = "Високі плато",
                 ThreatLevel = "Середній",
-                Abilities = new List<string>(),
-                Weaknesses = new List<string>(),
-                Images = new List<ImageResource>(),
-                HistoricalNotes = new List<HistoricalNote>(),
-                RelatedCreatures = new List<RelatedCreature>(),
+                Abilities = new(),
+                Weaknesses = new(),
+                Images = new(),
+                HistoricalNotes = new()
+                {
+                    new()
+                    {
+                        Title = "Походження відомостей",
+                        Content = "Відомості про істоту походять від народу високих плато.",
+                        CreatedAt = createdAt
+                    }
+                },
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             },
 
-            new Creature
+            new()
             {
                 Id = "creature_011",
                 Name = "Енцу-хай",
                 Slug = "enzu-hai",
-                Description = "Ловець тіней у густих лісах.",
+                Description = "Ловець тіней, що вистежує жертв у густих лісах.",
                 Category = "Хижак",
                 Mythology = "Лісова",
-                Origin = "Густі ліси",
+                Origin = "Густі ліси та прибережні яри",
                 ThreatLevel = "Середній",
-                Abilities = new List<string>
+                Abilities = new()
                 {
                     "Стеження",
-                    "Пастки",
+                    "Повітряні пастки",
                     "Раптовий напад"
                 },
-                Weaknesses = new List<string>(),
-                Images = new List<ImageResource>(),
-                HistoricalNotes = new List<HistoricalNote>(),
-                RelatedCreatures = new List<RelatedCreature>(),
+                Weaknesses = new(),
+                Images = new(),
+                HistoricalNotes = new()
+                {
+                    new()
+                    {
+                        Title = "Надійність джерел",
+                        Content = "Істоту описували лісові племена, однак надійність цих свідчень залишається низькою.",
+                        CreatedAt = createdAt
+                    }
+                },
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             },
 
-            new Creature
+            new()
             {
                 Id = "creature_012",
                 Name = "Моргул-син",
                 Slug = "morgul-sin",
-                Description = "Людиноподібна істота з ритуальною культурою кування духу.",
+                Description = "Людиноподібна істота середнього зросту з рогами гірського барана та попелястими візерунками на шкірі. Представники клану Вогняної Тіні відомі як ковалі духу.",
                 Category = "Гуманоїд",
                 Mythology = "Вулканічна",
                 Origin = "Вулканічні нагір’я",
                 ThreatLevel = "Катастрофічний",
-                Abilities = new List<string>
+                Abilities = new()
                 {
-                    "Кування духовної енергії",
                     "Контроль вогню",
-                    "Ритуальний поєдинок"
+                    "Ритуальний поєдинок",
+                    "Кування духовної енергії",
+                    "Підсилення зброї жаром"
                 },
-                Weaknesses = new List<string>(),
-                Images = new List<ImageResource>(),
-                HistoricalNotes = new List<HistoricalNote>(),
-                RelatedCreatures = new List<RelatedCreature>(),
+                Weaknesses = new(),
+                Images = new(),
+                HistoricalNotes = new()
+                {
+                    new()
+                    {
+                        Title = "Фольклор",
+                        Content = "У переказах Моргул-синів називають творцями Пісні Заліза, що звучить у кістках воїнів. Перед боєм вони мовчать і викликають ворога на ритуальний двобій.",
+                        CreatedAt = createdAt
+                    }
+                },
+                RelatedCreatures = new(),
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt
             }

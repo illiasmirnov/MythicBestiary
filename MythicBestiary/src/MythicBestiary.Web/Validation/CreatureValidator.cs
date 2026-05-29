@@ -1,4 +1,3 @@
-using FluentValidation;
 using MythicBestiary.DTOs;
 
 namespace MythicBestiary.Validation;
@@ -7,84 +6,83 @@ public class CreatureValidator : AbstractValidator<CreatureCreateDto>
 {
     public CreatureValidator()
     {
-        // Проверка названия
+        Include(new CreatureBaseValidator<CreatureCreateDto>());
+    }
+}
 
-        RuleFor(x => x.Name)
-            .NotEmpty()
-            .WithMessage("Creature name is required.")
-            .MaximumLength(100)
-            .WithMessage("Creature name is too long.");
+public class CreatureUpdateValidator : AbstractValidator<CreatureUpdateDto>
+{
+    public CreatureUpdateValidator()
+    {
+        Include(new CreatureBaseValidator<CreatureUpdateDto>());
+    }
+}
 
-        // Проверка slug
+public class CreatureBaseValidator<T> : AbstractValidator<T>
+    where T : class
+{
+    public CreatureBaseValidator()
+    {
+        RuleFor(x => GetString(x, "Name"))
+            .NotEmpty().WithMessage("Назва істоти є обов’язковою.")
+            .MaximumLength(100).WithMessage("Назва істоти не може перевищувати 100 символів.")
+            .Must(NotContainHtml).WithMessage("Назва істоти не повинна містити HTML або скрипти.");
 
-        RuleFor(x => x.Slug)
-            .NotEmpty()
-            .WithMessage("Slug is required.");
+        RuleFor(x => GetString(x, "Slug"))
+            .NotEmpty().WithMessage("Slug є обов’язковим.")
+            .MaximumLength(120).WithMessage("Slug не може перевищувати 120 символів.")
+            .Matches("^[a-z0-9]+(?:-[a-z0-9]+)*$")
+            .WithMessage("Slug може містити лише малі латинські літери, цифри та дефіси між словами.");
 
-        // Проверка описания
+        RuleFor(x => GetString(x, "Description"))
+            .NotEmpty().WithMessage("Опис істоти є обов’язковим.")
+            .MaximumLength(3000).WithMessage("Опис істоти не може перевищувати 3000 символів.")
+            .Must(NotContainHtml).WithMessage("Опис не повинен містити HTML або скрипти.");
 
-        RuleFor(x => x.Description)
-            .NotEmpty()
-            .WithMessage("Description is required.");
+        RuleFor(x => GetString(x, "Category"))
+            .NotEmpty().WithMessage("Категорія істоти є обов’язковою.")
+            .MaximumLength(80).WithMessage("Категорія не може перевищувати 80 символів.");
 
-        // Проверка категории
+        RuleFor(x => GetString(x, "Mythology"))
+            .NotEmpty().WithMessage("Міфологія є обов’язковою.")
+            .MaximumLength(120).WithMessage("Назва міфології не може перевищувати 120 символів.");
 
-        RuleFor(x => x.Category)
-            .NotEmpty()
-            .WithMessage("Category is required.");
+        RuleFor(x => GetString(x, "Origin"))
+            .NotEmpty().WithMessage("Походження істоти є обов’язковим.")
+            .MaximumLength(200).WithMessage("Походження не може перевищувати 200 символів.");
 
-        // Проверка мифологии
+        RuleFor(x => GetString(x, "ThreatLevel"))
+            .NotEmpty().WithMessage("Рівень небезпеки є обов’язковим.")
+            .MaximumLength(50).WithMessage("Рівень небезпеки не може перевищувати 50 символів.");
 
-        RuleFor(x => x.Mythology)
-            .NotEmpty()
-            .WithMessage("Mythology is required.");
+        RuleFor(x => GetCollection(x, "Abilities"))
+            .NotNull().WithMessage("Список здібностей є обов’язковим.")
+            .Must(items => items is not null && items.Any())
+            .WithMessage("Потрібно вказати хоча б одну здібність.");
 
-        // Проверка происхождения
-
-        RuleFor(x => x.Origin)
-            .NotEmpty()
-            .WithMessage("Origin is required.");
-
-        // Проверка уровня угрозы
-
-        RuleFor(x => x.ThreatLevel)
-            .NotEmpty()
-            .WithMessage("Threat level is required.");
-
-        // Проверка способностей
-
-        RuleFor(x => x.Abilities)
-            .NotNull()
-            .WithMessage("Abilities collection is required.");
-
-        // Проверка слабостей
-
-        RuleFor(x => x.Weaknesses)
-            .NotNull()
-            .WithMessage("Weaknesses collection is required.");
-
-        // TODO:
-        // Добавить regex validation для slug
-
-        // TODO:
-        // Добавить проверку уникальности slug
-
-        // TODO:
-        // Добавить sanitization validation
-
-        // TODO:
-        // Добавить forbidden symbols validation
-
-        // TODO:
-        // Добавить business rules validation
+        RuleFor(x => GetCollection(x, "Weaknesses"))
+            .NotNull().WithMessage("Список слабкостей є обов’язковим.")
+            .Must(items => items is not null && items.Any())
+            .WithMessage("Потрібно вказати хоча б одну слабкість.");
     }
 
-    // TODO:
-    // Добавить validation для CreatureUpdateDto
+    private static string? GetString(T instance, string propertyName)
+    {
+        return typeof(T).GetProperty(propertyName)?.GetValue(instance) as string;
+    }
 
-    // TODO:
-    // Добавить async validation rules
+    private static IEnumerable<string>? GetCollection(T instance, string propertyName)
+    {
+        return typeof(T).GetProperty(propertyName)?.GetValue(instance) as IEnumerable<string>;
+    }
 
-    // TODO:
-    // Добавить custom validation methods
+    private static bool NotContainHtml(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return true;
+        }
+
+        return !value.Contains('<') && !value.Contains('>');
+    }
 }

@@ -1,31 +1,44 @@
 /* ======================================================
-   GLOBAL STYLES
+   Mythic Bestiary — основні стилі вебзастосунку
+   Призначення:
+   - Razor Pages GUI/WUI для CRUD-операцій;
+   - підтримка карток істот без зовнішніх зображень;
+   - візуальне виділення геоданих, регіонів і середовищ;
+   - адаптивний інтерфейс для навчального проєкту.
 ====================================================== */
 
+/* ---------- Змінні теми ---------- */
+
 :root {
-    --color-background: #0f1720;
-    --color-surface: #17212b;
-    --color-surface-light: #223243;
-    --color-border: #31465c;
+    --color-background: #0d141d;
+    --color-surface: #17212d;
+    --color-surface-light: #213143;
+    --color-border: #33495f;
 
-    --color-primary: #4fa3ff;
-    --color-primary-hover: #74b8ff;
+    --color-primary: #5aa9ff;
+    --color-primary-hover: #83c0ff;
+    --color-accent: #ffbf5f;
 
-    --color-danger: #d9534f;
-    --color-danger-hover: #ff6b67;
+    --color-danger: #e25a56;
+    --color-danger-hover: #ff7773;
+    --color-success: #37b36b;
+    --color-warning: #ffc857;
 
-    --color-success: #2f9e44;
-    --color-warning: #ffb84d;
+    --color-text: #f4f7fb;
+    --color-text-muted: #b4c2d1;
 
-    --color-text: #f3f5f7;
-    --color-text-muted: #a7b4c3;
+    --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.34);
+    --shadow-hover: 0 20px 45px rgba(0, 0, 0, 0.46);
 
-    --shadow-primary: 0 12px 30px rgba(0, 0, 0, 0.35);
-    --transition-default: all 0.25s ease-in-out;
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 22px;
 
-    --border-radius: 14px;
     --content-width: 1320px;
+    --transition: 0.25s ease-in-out;
 }
+
+/* ---------- Базові стилі ---------- */
 
 *,
 *::before,
@@ -35,45 +48,39 @@
 
 html,
 body {
+    min-height: 100%;
     margin: 0;
     padding: 0;
-    min-height: 100%;
     scroll-behavior: smooth;
 }
 
 body {
     background:
-        radial-gradient(circle at top, rgba(79, 163, 255, 0.08), transparent 35%),
-        linear-gradient(180deg, #0b1118 0%, #0f1720 100%);
+        radial-gradient(circle at top left, rgba(90, 169, 255, 0.12), transparent 34%),
+        radial-gradient(circle at top right, rgba(255, 191, 95, 0.08), transparent 30%),
+        linear-gradient(180deg, #0a1017 0%, var(--color-background) 100%);
     color: var(--color-text);
-    font-family:
-        "Segoe UI",
-        Tahoma,
-        Geneva,
-        Verdana,
-        sans-serif;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    letter-spacing: 0.2px;
 }
 
 img {
-    max-width: 100%;
-    display: block;
+    display: none;
 }
 
 a {
     color: var(--color-primary);
     text-decoration: none;
-    transition: var(--transition-default);
+    transition: color var(--transition);
 }
 
 a:hover {
     color: var(--color-primary-hover);
 }
 
-ul,
-ol {
-    padding-left: 1.5rem;
+p {
+    margin-top: 0;
+    color: var(--color-text-muted);
 }
 
 h1,
@@ -87,14 +94,7 @@ h6 {
     line-height: 1.25;
 }
 
-p {
-    margin-top: 0;
-    color: var(--color-text-muted);
-}
-
-/* ======================================================
-   LAYOUT
-====================================================== */
+/* ---------- Макет сторінки ---------- */
 
 .container {
     width: 100%;
@@ -107,17 +107,17 @@ p {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: rgba(15, 23, 32, 0.95);
+    background: rgba(13, 20, 29, 0.96);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(12px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
 }
 
 .header .container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-height: 80px;
+    min-height: 78px;
 }
 
 .navigation {
@@ -128,9 +128,9 @@ p {
 
 .navigation a {
     position: relative;
-    font-weight: 600;
-    color: var(--color-text);
     padding: 0.5rem 0;
+    color: var(--color-text);
+    font-weight: 700;
 }
 
 .navigation a::after {
@@ -141,7 +141,7 @@ p {
     width: 0;
     height: 2px;
     background: var(--color-primary);
-    transition: var(--transition-default);
+    transition: width var(--transition);
 }
 
 .navigation a:hover::after,
@@ -152,15 +152,13 @@ p {
 .footer {
     margin-top: 4rem;
     padding: 2rem 0;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.22);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     color: var(--color-text-muted);
     text-align: center;
 }
 
-/* ======================================================
-   PAGE SECTIONS
-====================================================== */
+/* ---------- Загальні секції ---------- */
 
 .page-section {
     margin-bottom: 3rem;
@@ -168,12 +166,13 @@ p {
 
 .page-title {
     margin-bottom: 1rem;
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: 2.45rem;
+    font-weight: 800;
 }
 
 .page-description {
-    max-width: 780px;
+    max-width: 820px;
+    color: var(--color-text-muted);
     font-size: 1.05rem;
 }
 
@@ -182,66 +181,89 @@ p {
 }
 
 .hero-section__title {
-    font-size: 3rem;
     margin-bottom: 1rem;
+    font-size: 3rem;
+    font-weight: 850;
+}
+
+.hero-section__title::before {
+    content: "🐉 ";
 }
 
 .hero-section__subtitle {
-    max-width: 760px;
+    max-width: 780px;
     color: var(--color-text-muted);
     font-size: 1.1rem;
 }
 
-/* ======================================================
-   CREATURE GRID
-====================================================== */
+/* ---------- Сітка істот ---------- */
 
 .creature-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
     gap: 1.75rem;
 }
 
-/* ======================================================
-   CREATURE CARDS
-====================================================== */
+/* ---------- Картки істот без зовнішніх зображень ---------- */
 
 .creature-card {
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--border-radius);
+    border-radius: var(--radius-md);
     background:
-        linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.02) 0%,
-            rgba(255, 255, 255, 0.01) 100%
-        ),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
         var(--color-surface);
-    box-shadow: var(--shadow-primary);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: var(--shadow-soft);
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition),
+        border-color var(--transition);
 }
 
 .creature-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    border-color: rgba(90, 169, 255, 0.36);
+    box-shadow: var(--shadow-hover);
 }
 
 .creature-card__image {
-    position: relative;
-    overflow: hidden;
-    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 210px;
     background:
-        linear-gradient(
-            135deg,
-            rgba(79, 163, 255, 0.18),
-            rgba(255, 184, 77, 0.12)
-        );
+        radial-gradient(circle, rgba(255, 191, 95, 0.18), transparent 42%),
+        linear-gradient(135deg, rgba(90, 169, 255, 0.2), rgba(255, 255, 255, 0.03));
 }
 
-.creature-card__image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.creature-card__image::before {
+    content: "🐲";
+    font-size: 5.5rem;
+    filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.45));
+}
+
+.creature-card--dragon .creature-card__image::before {
+    content: "🐉";
+}
+
+.creature-card--griffin .creature-card__image::before {
+    content: "🦅";
+}
+
+.creature-card--phoenix .creature-card__image::before {
+    content: "🔥";
+}
+
+.creature-card--sea .creature-card__image::before {
+    content: "🌊";
+}
+
+.creature-card--forest .creature-card__image::before {
+    content: "🌲";
+}
+
+.creature-card--mountain .creature-card__image::before {
+    content: "⛰️";
 }
 
 .creature-card__content {
@@ -254,7 +276,7 @@ p {
 .creature-card__title {
     margin: 0;
     font-size: 1.4rem;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .creature-card__description {
@@ -266,16 +288,28 @@ p {
 .creature-card__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.7rem;
 }
 
 .creature-card__tag {
     padding: 0.4rem 0.75rem;
     border-radius: 999px;
-    background: rgba(79, 163, 255, 0.12);
-    color: #b8d9ff;
+    background: rgba(90, 169, 255, 0.13);
+    color: #c3e2ff;
     font-size: 0.82rem;
-    font-weight: 600;
+    font-weight: 700;
+}
+
+.creature-card__tag--region::before {
+    content: "🗺️ ";
+}
+
+.creature-card__tag--habitat::before {
+    content: "📍 ";
+}
+
+.creature-card__tag--geo::before {
+    content: "🌐 ";
 }
 
 .creature-card__footer {
@@ -285,9 +319,54 @@ p {
     margin-top: auto;
 }
 
-/* ======================================================
-   STATUS BADGES
-====================================================== */
+/* ---------- Геодані та GeoJSON ---------- */
+
+.geo-panel,
+.geojson-panel {
+    padding: 1.4rem;
+    border: 1px solid rgba(90, 169, 255, 0.24);
+    border-radius: var(--radius-md);
+    background:
+        linear-gradient(135deg, rgba(90, 169, 255, 0.08), rgba(255, 191, 95, 0.04)),
+        rgba(255, 255, 255, 0.025);
+    box-shadow: var(--shadow-soft);
+}
+
+.geo-panel__title::before,
+.geojson-panel__title::before {
+    content: "🗺️ ";
+}
+
+.geo-coordinates {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(90, 169, 255, 0.13);
+    color: #c7e5ff;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 0.92rem;
+}
+
+.geo-coordinates::before {
+    content: "📌";
+}
+
+pre,
+code {
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.26);
+    color: #d9ecff;
+    font-family: Consolas, "Courier New", monospace;
+}
+
+pre {
+    overflow-x: auto;
+    padding: 1rem;
+}
+
+/* ---------- Статуси ---------- */
 
 .badge {
     display: inline-flex;
@@ -296,29 +375,27 @@ p {
     padding: 0.45rem 0.85rem;
     border-radius: 999px;
     font-size: 0.78rem;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: 0.4px;
     text-transform: uppercase;
 }
 
 .badge--success {
-    background: rgba(47, 158, 68, 0.16);
-    color: #7ff29b;
+    background: rgba(55, 179, 107, 0.16);
+    color: #90f3b8;
 }
 
 .badge--warning {
-    background: rgba(255, 184, 77, 0.16);
-    color: #ffd89d;
+    background: rgba(255, 200, 87, 0.16);
+    color: #ffe0a3;
 }
 
 .badge--danger {
-    background: rgba(217, 83, 79, 0.16);
-    color: #ffb5b2;
+    background: rgba(226, 90, 86, 0.16);
+    color: #ffc0bd;
 }
 
-/* ======================================================
-   FORMS
-====================================================== */
+/* ---------- Форми CRUD ---------- */
 
 .form-group {
     margin-bottom: 1.5rem;
@@ -327,29 +404,33 @@ p {
 .form-group label {
     display: inline-block;
     margin-bottom: 0.55rem;
-    font-weight: 600;
     color: #ffffff;
+    font-weight: 700;
 }
 
 .form-control {
     width: 100%;
     padding: 0.9rem 1rem;
     border: 1px solid var(--color-border);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.035);
     color: var(--color-text);
     font-size: 1rem;
-    transition: var(--transition-default);
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition),
+        background var(--transition);
 }
 
 .form-control::placeholder {
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(255, 255, 255, 0.38);
 }
 
 .form-control:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 4px rgba(79, 163, 255, 0.12);
+    background: rgba(255, 255, 255, 0.055);
+    box-shadow: 0 0 0 4px rgba(90, 169, 255, 0.13);
 }
 
 textarea.form-control {
@@ -357,17 +438,16 @@ textarea.form-control {
     resize: vertical;
 }
 
-.validation-message {
+.validation-message,
+.field-validation-error {
     display: block;
     margin-top: 0.45rem;
-    color: #ff9d9d;
+    color: #ffaaa7;
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 
-/* ======================================================
-   BUTTONS
-====================================================== */
+/* ---------- Кнопки ---------- */
 
 .btn {
     display: inline-flex;
@@ -375,14 +455,17 @@ textarea.form-control {
     justify-content: center;
     gap: 0.5rem;
     min-height: 46px;
-    padding: 0.8rem 1.4rem;
+    padding: 0.8rem 1.35rem;
     border: none;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 0.95rem;
-    font-weight: 700;
+    font-weight: 800;
     text-decoration: none;
-    transition: var(--transition-default);
+    transition:
+        transform var(--transition),
+        background var(--transition),
+        box-shadow var(--transition);
 }
 
 .btn:hover {
@@ -390,37 +473,21 @@ textarea.form-control {
 }
 
 .btn-primary {
-    background: linear-gradient(
-        135deg,
-        var(--color-primary),
-        #2f80ed
-    );
+    background: linear-gradient(135deg, var(--color-primary), #2f80ed);
     color: #ffffff;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(
-        135deg,
-        var(--color-primary-hover),
-        #4d9fff
-    );
+    background: linear-gradient(135deg, var(--color-primary-hover), #4d9fff);
 }
 
 .btn-danger {
-    background: linear-gradient(
-        135deg,
-        var(--color-danger),
-        #b93b37
-    );
+    background: linear-gradient(135deg, var(--color-danger), #bd3f3b);
     color: #ffffff;
 }
 
 .btn-danger:hover {
-    background: linear-gradient(
-        135deg,
-        var(--color-danger-hover),
-        #ff8a87
-    );
+    background: linear-gradient(135deg, var(--color-danger-hover), #ff8a87);
 }
 
 .btn-secondary {
@@ -432,52 +499,49 @@ textarea.form-control {
     background: rgba(255, 255, 255, 0.14);
 }
 
-/* ======================================================
-   TABLES
-====================================================== */
+/* ---------- Таблиці ---------- */
 
 .table-wrapper {
     overflow-x: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
 }
 
 .table {
     width: 100%;
-    border-collapse: collapse;
-    border-radius: var(--border-radius);
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.02);
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.025);
 }
 
 .table thead {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.055);
 }
 
 .table th,
 .table td {
     padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.065);
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .table th {
     color: #ffffff;
     font-size: 0.92rem;
-    font-weight: 700;
-    text-transform: uppercase;
+    font-weight: 800;
     letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .table tbody tr {
-    transition: var(--transition-default);
+    transition: background var(--transition);
 }
 
 .table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.04);
 }
 
-/* ======================================================
-   SEARCH & FILTERS
-====================================================== */
+/* ---------- Пошук і фільтрація ---------- */
 
 .search-panel {
     display: flex;
@@ -486,21 +550,19 @@ textarea.form-control {
     margin-bottom: 2rem;
     padding: 1.5rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--border-radius);
-    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.025);
 }
 
 .search-panel .form-control {
     min-width: 220px;
 }
 
-/* ======================================================
-   DETAILS PAGE
-====================================================== */
+/* ---------- Детальна сторінка істоти ---------- */
 
 .creature-details {
     display: grid;
-    grid-template-columns: minmax(320px, 460px) 1fr;
+    grid-template-columns: minmax(300px, 440px) 1fr;
     gap: 2rem;
     align-items: start;
 }
@@ -512,16 +574,20 @@ textarea.form-control {
 }
 
 .creature-gallery {
-    overflow: hidden;
-    border-radius: var(--border-radius);
-    background: rgba(255, 255, 255, 0.02);
-    box-shadow: var(--shadow-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 360px;
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(circle, rgba(255, 191, 95, 0.18), transparent 45%),
+        linear-gradient(135deg, rgba(90, 169, 255, 0.18), rgba(255, 255, 255, 0.03));
+    box-shadow: var(--shadow-soft);
 }
 
-.creature-gallery img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.creature-gallery::before {
+    content: "🐲";
+    font-size: 7rem;
 }
 
 .creature-abilities {
@@ -534,8 +600,8 @@ textarea.form-control {
     position: relative;
     margin-bottom: 0.85rem;
     padding: 0.9rem 1rem 0.9rem 3rem;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.035);
 }
 
 .creature-abilities li::before {
@@ -543,16 +609,16 @@ textarea.form-control {
     position: absolute;
     left: 1rem;
     top: 50%;
-    transform: translateY(-50%);
     color: var(--color-primary);
     font-size: 1rem;
+    transform: translateY(-50%);
 }
 
 .creature-section {
     padding: 1.5rem;
-    border-radius: var(--border-radius);
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.065);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.028);
 }
 
 .creature-section__title {
@@ -560,31 +626,27 @@ textarea.form-control {
     font-size: 1.2rem;
 }
 
-/* ======================================================
-   ALERTS
-====================================================== */
+/* ---------- Повідомлення ---------- */
 
 .alert {
-    padding: 1rem 1.25rem;
-    border-radius: 12px;
     margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-sm);
 }
 
 .alert-success {
-    background: rgba(47, 158, 68, 0.12);
-    border: 1px solid rgba(47, 158, 68, 0.28);
-    color: #b5f5c2;
+    border: 1px solid rgba(55, 179, 107, 0.28);
+    background: rgba(55, 179, 107, 0.12);
+    color: #baf5d0;
 }
 
 .alert-danger {
-    background: rgba(217, 83, 79, 0.12);
-    border: 1px solid rgba(217, 83, 79, 0.28);
-    color: #ffb5b2;
+    border: 1px solid rgba(226, 90, 86, 0.28);
+    background: rgba(226, 90, 86, 0.12);
+    color: #ffc0bd;
 }
 
-/* ======================================================
-   PAGINATION
-====================================================== */
+/* ---------- Пагінація ---------- */
 
 .pagination {
     display: flex;
@@ -602,11 +664,13 @@ textarea.form-control {
     min-width: 44px;
     height: 44px;
     padding: 0 1rem;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.04);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.045);
     color: var(--color-text);
-    font-weight: 600;
-    transition: var(--transition-default);
+    font-weight: 700;
+    transition:
+        background var(--transition),
+        color var(--transition);
 }
 
 .pagination a:hover,
@@ -615,9 +679,7 @@ textarea.form-control {
     color: #ffffff;
 }
 
-/* ======================================================
-   RESPONSIVE
-====================================================== */
+/* ---------- Адаптивність ---------- */
 
 @media (max-width: 992px) {
     .creature-details {
@@ -647,10 +709,7 @@ textarea.form-control {
         padding-top: 3rem;
     }
 
-    .hero-section__title {
-        font-size: 2rem;
-    }
-
+    .hero-section__title,
     .page-title {
         font-size: 2rem;
     }
@@ -685,20 +744,8 @@ textarea.form-control {
     .hero-section__title {
         font-size: 1.7rem;
     }
+
+    .creature-gallery::before {
+        font-size: 5rem;
+    }
 }
-
-/* ======================================================
-   FUTURE FEATURES
-====================================================== */
-
-/* TODO:
-   Themes support */
-
-/* TODO:
-   Dark mode */
-
-/* TODO:
-   Animations */
-
-/* TODO:
-   Mythology specific styles */
